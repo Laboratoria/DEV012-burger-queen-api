@@ -308,7 +308,7 @@ describe('GET /orders/:orderId', () => {
               product: { ...product },
             }
           ],
-          status: "pending",           
+          status: "pending",
         },
       }))
       .then((resp) => {
