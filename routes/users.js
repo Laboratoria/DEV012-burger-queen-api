@@ -7,9 +7,15 @@ const {
 
 const {
   getUsers,
+  getUsersUid,
+  postUsers,
+  deleteUsers,
+  putUsers,
 } = require('../controller/users');
 
-const initAdminUser = (app, next) => {
+const { connect } = require('../connect');
+
+const initAdminUser = async (app, next) => {
   const { adminEmail, adminPassword } = app.get('config');
   if (!adminEmail || !adminPassword) {
     return next();
@@ -18,14 +24,35 @@ const initAdminUser = (app, next) => {
   const adminUser = {
     email: adminEmail,
     password: bcrypt.hashSync(adminPassword, 10),
-    roles: "admin",
+    role: 'admin',
   };
 
   // TODO: Create admin user
   // First, check if adminUser already exists in the database
   // If it doesn't exist, it needs to be saved
 
-  next();
+  try {
+    const db = await connect();
+    const usersCollection = db.collection('user');
+
+    const adminUserExists = await usersCollection.findOne({
+      email: adminEmail,
+    });
+
+    if (!adminUserExists) {
+      await usersCollection.insertOne(adminUser);
+    } else {
+      console.info('El  administrador ya existe');
+    }
+
+    next();
+  } catch (error) {
+    // Manejar el error de la consulta a la base de datos
+    console.error(
+      error,
+    );
+    // next();
+  }
 };
 
 /*
@@ -84,21 +111,15 @@ const initAdminUser = (app, next) => {
  */
 
 module.exports = (app, next) => {
-
   app.get('/users', requireAdmin, getUsers);
 
-  app.get('/users/:uid', requireAuth, (req, resp) => {
-  });
+  app.get('/users/:uid', requireAuth, getUsersUid);
 
-  app.post('/users', requireAdmin, (req, resp, next) => {
-    // TODO: Implement the route to add new users
-  });
+  app.post('/users', requireAdmin, postUsers);
 
-  app.put('/users/:uid', requireAuth, (req, resp, next) => {
-  });
+  app.put('/users/:uid', requireAuth, putUsers);
 
-  app.delete('/users/:uid', requireAuth, (req, resp, next) => {
-  });
+  app.delete('/users/:uid', requireAuth, deleteUsers);
 
   initAdminUser(app, next);
 };

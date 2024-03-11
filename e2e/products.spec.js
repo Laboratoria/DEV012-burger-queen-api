@@ -4,7 +4,7 @@ const {
   fetchAsAdmin,
 } = process;
 
-describe('POST /products', () => {
+describe.only('POST /products', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/products', { method: 'POST' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -26,8 +26,8 @@ describe('POST /products', () => {
       body: {
         name: 'Test',
         price: 5,
-        image: "https://github.com/Laboratoria/bootcamp/tree/main/projects/04-burger-queen-api/resources/images/water.jpg",
-        type: "Lunch"
+        image: 'https://github.com/Laboratoria/bootcamp/tree/main/projects/04-burger-queen-api/resources/images/water.jpg',
+        type: 'Lunch',
       },
     })
       .then((resp) => {
@@ -212,7 +212,7 @@ describe('DELETE /products/:productid', () => {
         name: 'Test',
         price: 10,
         image: "https://github.com/Laboratoria/bootcamp/tree/main/projects/04-burger-queen-api/resources/images/water.jpg",
-        type: "Lunch"
+        type: 'Lunch'
       },
     })
       .then((resp) => {
